@@ -1,12 +1,12 @@
 package entities;
 
 public abstract class Vehicle {
-    String id;
+    public String id;
     String brand;
     String model;
     int year;
     double price;
-    boolean rented;
+    public boolean rented;
 
     public abstract String toCSV();
     public abstract String toString();

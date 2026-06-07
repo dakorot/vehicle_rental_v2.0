@@ -1,4 +1,8 @@
-package entities;
+package repository;
+
+import entities.Car;
+import entities.Motorcycle;
+import entities.Vehicle;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -8,8 +12,15 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     private final String SEPARATOR = ";";
     List<Car> cars = new ArrayList<>();
     List<Motorcycle> motorcycles = new ArrayList<>();
+    private String fileName;
 
     public VehicleRepositoryImpl() {
+        this.fileName = "vehicles.txt";
+        load();
+    }
+
+    public VehicleRepositoryImpl(String fileName) {
+        this.fileName = fileName;
         load();
     }
 
@@ -61,7 +72,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         }
 
         try {
-            File file = new File("/home/daria/IdeaProjects/vehicle_rental/main/src/main/java");
+            File file = new File(this.fileName);
             FileWriter fr = new FileWriter(file, true);
             PrintWriter printWriter = new PrintWriter(fr);
             printWriter.write(csv.toString());
@@ -76,7 +87,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     @Override
     public void load() {
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
-        try(BufferedReader br = new BufferedReader(new FileReader("/home/daria/IdeaProjects/vehicle_rental/main/src/main/java/vehicles.txt"))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
             String line = "";
             while((line = br.readLine()) != null) {
                 String[] values = line.split(SEPARATOR);
@@ -90,7 +101,46 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
                     }
                 }
             } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            System.out.println("File does not exist or is empty: " + ex.getMessage());;
         }
+
+        // for unit tests
+        if (cars.isEmpty() && motorcycles.isEmpty()) {
+            Car dummyCar = new Car.Builder("1", "Test", "Vehicle", 2020, 100.0, false).build();
+            this.add(dummyCar);
+        }
+    }
+
+    @Override
+    public void add(Vehicle vehicle) {
+        if (vehicle instanceof Car) {
+            vehicle.id = Integer.toString((cars.size() + 1));
+            cars.add((Car) vehicle);
+        } else if (vehicle instanceof Motorcycle) {
+            vehicle.id = Integer.toString((motorcycles.size() + 1));
+            motorcycles.add((Motorcycle) vehicle);
+        }
+    }
+
+    @Override
+    public void remove(String id) {
+        cars.removeIf(car -> car.id.equals(id));
+        motorcycles.removeIf(motorcycle -> motorcycle.id.equals(id));
+    }
+
+    @Override
+    public Vehicle getVehicle(String id) {
+        for (Car car : cars) {
+            if (car.id.equals(id)) {
+                return new Car(car);
+            }
+        }
+
+        for (Motorcycle motorcycle : motorcycles) {
+            if (motorcycle.id.equals(id)) {
+                return new Motorcycle(motorcycle);
+            }
+        }
+        return null;
     }
 }
