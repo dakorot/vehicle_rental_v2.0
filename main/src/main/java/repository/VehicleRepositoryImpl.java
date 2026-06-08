@@ -61,7 +61,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         return vehicles;
     }
 
-    @Override
     public void save() {
         List<Vehicle> allVehicles = getVehicles();
         StringBuilder csv = new StringBuilder();
@@ -84,7 +83,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
         } {}
     }
 
-    @Override
     public void load() {
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
         try(BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
