@@ -40,7 +40,6 @@ public class UserRepositoryImpl implements IUserRepository {
         return copiedUsers;
     }
 
-    @Override
     public void save() {
         try(PrintWriter writer = new PrintWriter(new FileWriter(this.fileName, false))) {
             for(User user : users) {
@@ -54,7 +53,6 @@ public class UserRepositoryImpl implements IUserRepository {
         }
     }
 
-    @Override
     public void load() {
         users.clear();
 
@@ -92,5 +90,15 @@ public class UserRepositoryImpl implements IUserRepository {
                 break;
             }
         }
+    }
+
+    @Override
+    public void add(User user) {
+        users.add(user);
+    }
+
+    @Override
+    public void remove(String login) {
+        users.removeIf(u -> u.login.equals(login));
     }
 }
