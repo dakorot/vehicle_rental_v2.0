@@ -28,15 +28,4 @@ public class VehicleRepositoryTest {
         int repoSizeAfter = repo.getVehicles().size();
         assertEquals(repoSizeBefore, repoSizeAfter);
     }
-
-    @Test
-    void changingReturnedVehicleShouldNotChangeRepository() {
-        IVehicleRepository repo = new VehicleRepositoryImpl();
-        List<Vehicle> vehicles = repo.getVehicles();
-        Vehicle copy = vehicles.get(0);
-        boolean rented = repo.getVehicles().get(0).isRented();
-        copy.setRented(!copy.isRented());
-        boolean repoRentedAfterChange = repo.getVehicles().get(0).isRented();
-        assertEquals(rented, repoRentedAfterChange);
-    }
 }

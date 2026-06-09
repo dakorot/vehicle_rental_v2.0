@@ -35,8 +35,6 @@ public class Motorcycle extends Vehicle {
                 .append(SEPARATOR)
                 .append(this.price)
                 .append(SEPARATOR)
-                .append(this.rented)
-                .append(SEPARATOR)
                 .append(findCategory(this.id))
                 .toString();
     }
@@ -55,16 +53,14 @@ public class Motorcycle extends Vehicle {
         private final String model;
         private final int year;
         private final double price;
-        private final boolean rented;
         private final String category;
 
-        public Builder(String id, String brand, String model, int year, double price, boolean rented, String category) {
+        public Builder(String id, String brand, String model, int year, double price, String category) {
             this.id = id;
             this.brand = brand;
             this.model = model;
             this.year = year;
             this.price = price;
-            this.rented = rented;
             this.category = category;
         }
 
@@ -78,16 +74,15 @@ public class Motorcycle extends Vehicle {
         model = builder.model;
         year = builder.year;
         price = builder.price;
-        rented = builder.rented;
         category = builder.category;
     }
 
     public Motorcycle(Motorcycle other) {
+        this.id = other.id;
         this.brand = other.brand;
         this.model = other.model;
         this.year = other.year;
         this.price = other.price;
-        this.rented = other.rented;
         this.category = other.category;
     }
 }

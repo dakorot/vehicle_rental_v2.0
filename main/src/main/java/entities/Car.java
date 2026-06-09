@@ -33,8 +33,6 @@ public class Car extends Vehicle {
                 .append(this.year)
                 .append(SEPARATOR)
                 .append(this.price)
-                .append(SEPARATOR)
-                .append(this.rented)
                 .toString();
     }
 
@@ -44,15 +42,13 @@ public class Car extends Vehicle {
         private final String model;
         private final int year;
         private final double price;
-        private final boolean rented;
 
-        public Builder(String id, String brand, String model, int year, double price, boolean rented) {
+        public Builder(String id, String brand, String model, int year, double price) {
             this.id = id;
             this.brand = brand;
             this.model = model;
             this.year = year;
             this.price = price;
-            this.rented = rented;
         }
 
         public Car build() {
@@ -66,7 +62,6 @@ public class Car extends Vehicle {
         model = builder.model;
         year = builder.year;
         price = builder.price;
-        rented = builder.rented;
     }
 
     public Car(String id, String brand, String model, int year, double price, boolean rented) {
@@ -75,7 +70,6 @@ public class Car extends Vehicle {
         this.model = model;
         this.year = year;
         this.price = price;
-        this.rented = rented;
     }
 
     public Car(Car other) {
@@ -84,6 +78,5 @@ public class Car extends Vehicle {
         this.model = other.model;
         this.year = other.year;
         this.price = other.price;
-        this.rented = other.rented;
     }
 }

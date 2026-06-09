@@ -25,28 +25,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     }
 
     @Override
-    public void rentVehicle(Vehicle vehicle) {
-        vehicle.rented = true;
-    }
-
-    @Override
-    public Vehicle returnVehicle(String id) {
-        for(int i=0; i<cars.size(); ++i) {
-            if(cars.get(i).id.equals(id)) {
-                return cars.get(i);
-            }
-        }
-
-        for(int i=0; i<motorcycles.size(); ++i) {
-            if(motorcycles.get(i).id.equals(id)) {
-                return motorcycles.get(i);
-            }
-        }
-
-        return null;
-    }
-
-    @Override
     public List<Vehicle> getVehicles() {
         List<Vehicle> vehicles = new ArrayList<>();
 
@@ -90,11 +68,11 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
             while((line = br.readLine()) != null) {
                 String[] values = line.split(SEPARATOR);
                     if(values[0].charAt(0) == 'C') {
-                        Car car = new Car.Builder(values[1], values[2], values[3], Integer.parseInt(values[4]), Double.parseDouble(values[5]), Boolean.parseBoolean(values[6])).build();
+                        Car car = new Car.Builder(values[1], values[2], values[3], Integer.parseInt(values[4]), Double.parseDouble(values[5])).build();
                         cars.add(car);
                     }
                     else {
-                        Motorcycle motorcycle = new Motorcycle.Builder(values[1], values[2], values[3], Integer.parseInt(values[4]), Double.parseDouble(values[5]), Boolean.parseBoolean(values[6]), values[7]).build();
+                        Motorcycle motorcycle = new Motorcycle.Builder(values[1], values[2], values[3], Integer.parseInt(values[4]), Double.parseDouble(values[5]), values[7]).build();
                         motorcycles.add(motorcycle);
                     }
                 }
@@ -104,7 +82,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
 
         // for unit tests
         if (cars.isEmpty() && motorcycles.isEmpty()) {
-            Car dummyCar = new Car.Builder("1", "Test", "Vehicle", 2020, 100.0, false).build();
+            Car dummyCar = new Car.Builder("1", "Test", "Vehicle", 2020, 100.0).build();
             this.add(dummyCar);
         }
     }
@@ -112,10 +90,10 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     @Override
     public void add(Vehicle vehicle) {
         if (vehicle instanceof Car) {
-            vehicle.id = Integer.toString((cars.size() + 1));
+            vehicle.id = Integer.toString(cars.size() + motorcycles.size() + 1);
             cars.add((Car) vehicle);
         } else if (vehicle instanceof Motorcycle) {
-            vehicle.id = Integer.toString((motorcycles.size() + 1));
+            vehicle.id = Integer.toString(cars.size() + motorcycles.size() + 1);
             motorcycles.add((Motorcycle) vehicle);
         }
     }
