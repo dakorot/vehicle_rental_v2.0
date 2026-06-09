@@ -43,9 +43,7 @@ public class UserRepositoryImpl implements IUserRepository {
     public void save() {
         try(PrintWriter writer = new PrintWriter(new FileWriter(this.fileName, false))) {
             for(User user : users) {
-                String vehicleId = (user.rentedVehicleId != null) ? user.rentedVehicleId : "null";
-
-                writer.println(user.login + ";" + user.password + ";" + user.role.name() + ";" + vehicleId);
+                writer.println(user.login + ";" + user.password + ";" + user.role.name());
             }
         } catch (IOException e) {
             System.out.println("Something went wrong during writing into the users.txt file.");
@@ -67,10 +65,6 @@ public class UserRepositoryImpl implements IUserRepository {
                     Role role = Role.valueOf(data[2]);
 
                     User.Builder builder = new User.Builder(login, password, role);
-
-                    if (data.length == 4 && !data[3].equals("null")) {
-                        builder.rentedVehicleId(data[3]);
-                    }
 
                     users.add(builder.build());
                 }
