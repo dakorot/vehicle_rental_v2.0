@@ -1,2 +1,0 @@
-admin;$2a$10$DKRRHK8/u8xjDhHrfwl/YOLlmdRo0pR/Bz1eCzKbBxmwFORvCn4de;ADMIN
-user;$2a$10$K9aVM.dX5Ti7vDFtVbZmhe8EU88sPEwgeQterJhorgLp6JN2MssJi;USER
