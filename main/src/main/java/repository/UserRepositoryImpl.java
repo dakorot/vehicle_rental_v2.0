@@ -1,9 +1,11 @@
 package repository;
 
-import entities.Role;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import entities.User;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,7 @@ public class UserRepositoryImpl implements IUserRepository {
     private String fileName;
 
     public UserRepositoryImpl() {
-        this.fileName = "users.txt";
+        this.fileName = "users.json";
         load();
     }
 
@@ -41,34 +43,25 @@ public class UserRepositoryImpl implements IUserRepository {
     }
 
     public void save() {
-        try(PrintWriter writer = new PrintWriter(new FileWriter(this.fileName, false))) {
-            for(User user : users) {
-                writer.println(user.login + ";" + user.password + ";" + user.role.name());
-            }
+        Gson gson = new Gson();
+        try(FileWriter writer = new FileWriter(this.fileName)) {
+            gson.toJson(users, writer);
         } catch (IOException e) {
-            System.out.println("Something went wrong during writing into the users.txt file.");
+            System.out.println("Something went wrong during writing into the users.json file.");
             throw new RuntimeException(e);
         }
     }
 
     public void load() {
-        users.clear();
+        Gson gson = new Gson();
 
-        try(BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(";");
+        try(FileReader reader = new FileReader(this.fileName)) {
+            Type listType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> loadedUsers = gson.fromJson(reader, listType);
 
-                if (data.length >= 3) {
-                    String login = data[0];
-                    String password = data[1];
-                    Role role = Role.valueOf(data[2]);
+            if (loadedUsers != null) this.users = loadedUsers;
+            else this.users = new ArrayList<>();
 
-                    User.Builder builder = new User.Builder(login, password, role);
-
-                    users.add(builder.build());
-                }
-            }
         } catch (FileNotFoundException e) {
             System.out.println("File " + this.fileName + " does not exist. Starting with an empty list.");
         } catch (IOException e) {

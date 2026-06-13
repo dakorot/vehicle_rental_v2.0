@@ -1,8 +1,12 @@
 package repository;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import entities.Rental;
+import entities.User;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +15,7 @@ public class RentalRepositoryImpl implements IRentalRepository {
     private String fileName;
 
     public RentalRepositoryImpl() {
-        this.fileName = "vehicles.txt";
+        this.fileName = "rentals.json";
         load();
     }
 
@@ -32,10 +36,9 @@ public class RentalRepositoryImpl implements IRentalRepository {
 
     @Override
     public void save() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(this.fileName, false))) {
-            for (Rental r : rentals) {
-                writer.println(r.id + ";" + r.userLogin + ";" + r.vehicleId);
-            }
+        Gson gson = new Gson();
+        try (FileWriter writer =  new FileWriter(this.fileName)) {
+            gson.toJson(rentals, writer);
         } catch (IOException e) {
             System.out.println("Error occurred during save attempt: " + e.getMessage());
         }
@@ -43,17 +46,17 @@ public class RentalRepositoryImpl implements IRentalRepository {
 
     @Override
     public void load() {
-        rentals.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(";");
-                if (data.length == 3) {
-                    rentals.add(new Rental(data[0], data[1], data[2]));
-                }
-            }
+        Gson gson = new Gson();
+
+        try (FileReader reader = new FileReader(this.fileName)) {
+            Type listType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<Rental> loadedRentals = gson.fromJson(reader, listType);
+
+            if (loadedRentals != null) this.rentals = loadedRentals;
+            else this.rentals = new ArrayList<>();
+
         } catch (FileNotFoundException e) {
-            System.out.println("No such file \"rentals.txt\". Starting with an empty list.");
+            System.out.println("No such file \"rentals.json\". Starting with an empty list.");
         } catch (IOException e) {
             System.out.println("Error occurred during load attempt: " + e.getMessage());
         }

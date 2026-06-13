@@ -1,5 +1,6 @@
 package repository;
 
+import com.google.gson.Gson;
 import entities.Car;
 import entities.Motorcycle;
 import entities.Vehicle;
@@ -15,7 +16,7 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     private String fileName;
 
     public VehicleRepositoryImpl() {
-        this.fileName = "vehicles.txt";
+        this.fileName = "vehicles.json";
         load();
     }
 
@@ -40,21 +41,13 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     }
 
     public void save() {
-        List<Vehicle> allVehicles = getVehicles();
-        StringBuilder csv = new StringBuilder();
+        Gson gson = new Gson();
+        VehicleData data = new VehicleData();
+        data.cars = this.cars;
+        data.motorcycles = this.motorcycles;
 
-        for(Vehicle vehicle : allVehicles) {
-            csv.append(vehicle.toCSV());
-            csv.append('\n');
-        }
-
-        try {
-            File file = new File(this.fileName);
-            FileWriter fr = new FileWriter(file, true);
-            PrintWriter printWriter = new PrintWriter(fr);
-            printWriter.write(csv.toString());
-            printWriter.flush();
-            printWriter.close();
+        try (FileWriter writer = new FileWriter(this.fileName)) {
+            gson.toJson(data, writer);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -62,22 +55,15 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
     }
 
     public void load() {
-        List<Vehicle> vehicles = new ArrayList<Vehicle>();
-        try(BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
-            String line = "";
-            while((line = br.readLine()) != null) {
-                String[] values = line.split(SEPARATOR);
-                    if(values[0].charAt(0) == 'C') {
-                        Car car = new Car.Builder(values[1], values[2], values[3], Integer.parseInt(values[4]), Double.parseDouble(values[5])).build();
-                        cars.add(car);
-                    }
-                    else {
-                        Motorcycle motorcycle = new Motorcycle.Builder(values[1], values[2], values[3], Integer.parseInt(values[4]), Double.parseDouble(values[5]), values[7]).build();
-                        motorcycles.add(motorcycle);
-                    }
-                }
-            } catch (IOException ex) {
-            System.out.println("File does not exist or is empty: " + ex.getMessage());;
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(this.fileName)) {
+            VehicleData data = gson.fromJson(reader, VehicleData.class);
+            if (data != null) {
+                this.cars = data.cars != null ? data.cars : new ArrayList<>();
+                this.motorcycles = data.motorcycles != null ? data.motorcycles : new ArrayList<>();
+            }
+        } catch (IOException ex) {
+            System.out.println("File does not exist or is empty: " + ex.getMessage());
         }
 
         // for unit tests
@@ -118,5 +104,10 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
             }
         }
         return null;
+    }
+
+    private static class VehicleData {
+        List<Car> cars = new ArrayList<>();
+        List<Motorcycle> motorcycles = new ArrayList<>();
     }
 }
