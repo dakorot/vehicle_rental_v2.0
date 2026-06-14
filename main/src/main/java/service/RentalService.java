@@ -63,4 +63,11 @@ public class RentalService {
     public List<Rental> getAllRentals() {
         return rentalRepo.getRentals();
     }
+
+    public boolean isVehicleRented(String vehicleId) {
+        for(Rental rental : rentalRepo.getRentals()) {
+            if(vehicleId.equals(rental.id)) return true;
+        }
+        return false;
+    }
 }

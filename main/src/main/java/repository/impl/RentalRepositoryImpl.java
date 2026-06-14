@@ -1,9 +1,10 @@
-package repository;
+package repository.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import entities.Rental;
 import entities.User;
+import repository.IRentalRepository;
 
 import java.io.*;
 import java.lang.reflect.Type;

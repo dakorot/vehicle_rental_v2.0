@@ -1,0 +1,12 @@
+[
+  {
+    "category": "Car",
+    "attributes": {}
+  },
+  {
+    "category": "Motorcycle",
+    "attributes": {
+      "motorcycleCategory": "string"
+    }
+  }
+]
