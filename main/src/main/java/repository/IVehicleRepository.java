@@ -9,4 +9,5 @@ public interface IVehicleRepository {
     public void add(Vehicle vehicle);
     public void remove(String id);
     public Vehicle getVehicle(String id);
+    public void save();
 }

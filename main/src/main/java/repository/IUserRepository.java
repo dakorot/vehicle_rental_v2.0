@@ -10,4 +10,6 @@ public interface IUserRepository {
     void update(User user);
     void add(User user);
     void remove(String login);
+
+    void save();
 }
