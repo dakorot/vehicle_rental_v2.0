@@ -5,9 +5,9 @@ import entities.Vehicle;
 import java.util.List;
 
 public interface IVehicleRepository {
-    public List<Vehicle> getVehicles();
-    public void add(Vehicle vehicle);
-    public void remove(String id);
-    public Vehicle getVehicle(String id);
-    public void save();
+    List<Vehicle> getVehicles();
+    void add(Vehicle vehicle);
+    void remove(String id);
+    Vehicle getVehicle(String id);
+    void save();
 }
