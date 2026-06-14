@@ -5,7 +5,7 @@ import entities.Role;
 import entities.User;
 import entities.Vehicle;
 import entities.VehicleCategoryConfig;
-import repository.impl.UserRepositoryImpl;
+import repository.IUserRepository;
 import service.*;
 
 import java.util.List;
@@ -18,11 +18,11 @@ public class UI {
     private final VehicleService vehicleService;
     private final VehicleCategoryConfigService configService;
     private final UserService userService;
-    private final UserRepositoryImpl userRepo;
+    private final IUserRepository userRepo;
     private final Scanner scanner = new Scanner(System.in);
 
     public UI(AuthService authService, RentalService rentalService, VehicleService vehicleService,
-              VehicleCategoryConfigService configService, UserService userService, UserRepositoryImpl userRepo) {
+              VehicleCategoryConfigService configService, UserService userService, IUserRepository userRepo) {
         this.authService = authService;
         this.rentalService = rentalService;
         this.vehicleService = vehicleService;
@@ -100,7 +100,7 @@ public class UI {
         while (adminMenuRunning) {
             System.out.println("\n--- ADMIN MENU ---");
             System.out.println("1. See the list of vehicles.");
-            System.out.println("2. Add a vehicle (Config-Driven).");
+            System.out.println("2. Add a vehicle.");
             System.out.println("3. Remove a vehicle.");
             System.out.println("4. See the list of users and their rented vehicles.");
             System.out.println("5. Remove a user.");
