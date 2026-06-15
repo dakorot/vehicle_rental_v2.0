@@ -1,8 +1,9 @@
 package repository;
 
-import entities.Vehicle;
+import com.dako.pl.entities.Vehicle;
+import com.dako.pl.repository.IVehicleRepository;
 import org.junit.jupiter.api.Test;
-import repository.impl.VehicleRepositoryImpl;
+import com.dako.pl.repository.impl.VehicleRepositoryImpl;
 
 import java.util.List;
 
