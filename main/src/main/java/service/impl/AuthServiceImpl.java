@@ -1,14 +1,15 @@
-package service;
+package service.impl;
 
 import entities.Role;
 import entities.User;
 import repository.IUserRepository;
 import org.mindrot.jbcrypt.BCrypt;
+import service.IAuthService;
 
-public class AuthService {
+public class AuthServiceImpl implements IAuthService {
     private final IUserRepository userRepository;
 
-    public AuthService(IUserRepository userRepository) {
+    public AuthServiceImpl(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

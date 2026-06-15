@@ -1,19 +1,22 @@
 package entities;
 
+import jakarta.persistence.*;
 import lombok.*;
-import repository.IVehicleRepository;
-import service.RentalService;
-import service.VehicleValidator;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Entity
+@Table(name = "vehicle")
 @Getter
 @Setter
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString
 public class Vehicle {
+
+    @Id
     private String id;
     private String category;
     private String brand;
@@ -21,10 +24,8 @@ public class Vehicle {
     private int year;
     private double price;
 
-    private final IVehicleRepository vehicleRepo;
-    private final RentalService rentalService;
-    private final VehicleValidator validator;
-
+    @Convert(converter = AttrConverter.class)
+    @Column(columnDefinition = "TEXT")
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private Map<String, Object> attributes = new HashMap<>();
@@ -35,12 +36,8 @@ public class Vehicle {
                    String brand,
                    String model,
                    int year,
-                   String plate,
                    double price,
-                   Map<String, Object> attributes,
-                   IVehicleRepository vehicleRepo,
-                   RentalService rentalService,
-                   VehicleValidator validator) {
+                   Map<String, Object> attributes) {
         this.id = id;
         this.category = category;
         this.brand = brand;
@@ -48,10 +45,6 @@ public class Vehicle {
         this.year = year;
         this.price = price;
         this.attributes = attributes == null ? new HashMap<>() : new HashMap<>(attributes);
-
-        this.vehicleRepo = vehicleRepo;
-        this.rentalService = rentalService;
-        this.validator = validator;
     }
 
     public void addAttribute(String name, Object value) {
@@ -71,24 +64,6 @@ public class Vehicle {
                 .year(year)
                 .price(price)
                 .attributes(new HashMap<>(attributes))
-                .vehicleRepo(vehicleRepo)
-                .rentalService(rentalService)
-                .validator(validator)
                 .build();
-    }
-
-    public Vehicle addVehicle(Vehicle vehicle) {
-        validator.validate(vehicle);
-        vehicleRepo.add(vehicle);
-        vehicleRepo.save();
-        return vehicle;
-    }
-
-    public void removeVehicle(String vehicleId) {
-        if (rentalService.isVehicleRented(vehicleId)) {
-            throw new IllegalStateException("You cannot rent this vehicle because it has been already rented!");
-        }
-        vehicleRepo.remove(vehicleId);
-        vehicleRepo.save();
     }
 }

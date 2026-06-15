@@ -1,21 +1,22 @@
-package service;
+package service.impl;
 
 import repository.IUserRepository;
+import service.IUserService;
 
-public class UserService {
+public class UserServiceImpl implements IUserService {
     private final IUserRepository userRepo;
-    private final RentalService rentalService;
+    private final RentalServiceImpl rentalServiceImpl;
 
-    public UserService(IUserRepository userRepo, RentalService rentalService) {
+    public UserServiceImpl(IUserRepository userRepo, RentalServiceImpl rentalServiceImpl) {
         this.userRepo = userRepo;
-        this.rentalService = rentalService;
+        this.rentalServiceImpl = rentalServiceImpl;
     }
 
     public void removeUser(String login) {
         if (login.equals("admin")) {
             throw new IllegalArgumentException("Unable to remove the main admin.");
         }
-        if (rentalService.getUserRental(login) != null) {
+        if (rentalServiceImpl.getUserRental(login) != null) {
             throw new IllegalStateException("Unable to remove the user, they haven't returned their vehicle yet!");
         }
         userRepo.remove(login);

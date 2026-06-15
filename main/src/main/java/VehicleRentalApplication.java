@@ -1,13 +1,14 @@
 import repository.*;
 import repository.impl.*;
 import service.*;
+import service.impl.*;
 import ui.UI;
 
 public class VehicleRentalApplication {
 
     public static void main(String[] args) {
         VehicleCategoryConfigRepository configRepo = new VehicleCategoryConfigRepositoryImpl();
-        VehicleCategoryConfigService configService = new VehicleCategoryConfigService(configRepo);
+        VehicleCategoryConfigServiceImpl configService = new VehicleCategoryConfigServiceImpl(configRepo);
         VehicleValidator validator = new VehicleValidator(configService);
 
         String mode = "json";
@@ -19,25 +20,29 @@ public class VehicleRentalApplication {
         IVehicleRepository vehicleRepo;
         IRentalRepository rentalRepo;
 
-        if (mode.equals("jdbc")) {
+        if (mode.equals("hibernate")) {
+            System.out.println("=== RUNNING THE APP IN HIBERNATE MODE ===");
+            userRepo = new UserRepositoryHibernate();
+            vehicleRepo = new VehicleRepositoryHibernate();
+            rentalRepo = new RentalRepositoryHibernate();
+        } else if (mode.equals("jdbc")) {
             System.out.println("=== RUNNING THE APP IN JDBC MODE ===");
             String dbUrl = System.getenv("DB_URL");
             userRepo = new UserRepositoryJdbcImpl(dbUrl);
             vehicleRepo = new VehicleRepositoryJdbcImpl(dbUrl);
-            rentalRepo = new RentalRepositoryJdbcImpl(dbUrl);
-        }
-        else {
+            rentalRepo = new RentalRepositoryJdbcImpl(dbUrl, userRepo, vehicleRepo);
+        } else {
             System.out.println("=== RUNNING THE APP IN JSON MODE ===");
             userRepo = new UserRepositoryImpl();
             vehicleRepo = new VehicleRepositoryImpl();
             rentalRepo = new RentalRepositoryImpl();
         }
-        AuthService authService = new AuthService(userRepo);
-        RentalService rentalService = new RentalService(rentalRepo, vehicleRepo);
-        VehicleService vehicleService = new VehicleService(vehicleRepo, rentalService, validator);
-        UserService userService = new UserService(userRepo, rentalService);
+        AuthServiceImpl authServiceImpl = new AuthServiceImpl(userRepo);
+        RentalServiceImpl rentalServiceImpl = new RentalServiceImpl(rentalRepo, vehicleRepo);
+        VehicleServiceImpl vehicleServiceImpl = new VehicleServiceImpl(vehicleRepo, rentalServiceImpl, validator);
+        UserServiceImpl userServiceImpl = new UserServiceImpl(userRepo, rentalServiceImpl);
 
-        UI ui = new UI(authService, rentalService, vehicleService, configService, userService, userRepo);
+        UI ui = new UI(authServiceImpl, rentalServiceImpl, vehicleServiceImpl, configService, userServiceImpl, userRepo);
         ui.start();
     }
 }

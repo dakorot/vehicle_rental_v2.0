@@ -67,7 +67,6 @@ public class VehicleRepositoryImpl implements IVehicleRepository {
                     .brand("Test")
                     .model("Vehicle")
                     .year(2020)
-                    .plate("TEST-01")
                     .price(100.0)
                     .build();
             this.add(dummyVehicle);

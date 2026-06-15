@@ -1,40 +1,42 @@
-package service;
+package service.impl;
 
 import entities.Rental;
+import entities.User;
 import entities.Vehicle;
 import repository.IRentalRepository;
 import repository.IVehicleRepository;
+import service.IRentalService;
 
 import java.util.List;
 import java.util.UUID;
 
-public class RentalService {
+public class RentalServiceImpl implements IRentalService {
     private final IRentalRepository rentalRepo;
     private final IVehicleRepository vehicleRepo;
 
-    public RentalService(IRentalRepository rentalRepo, IVehicleRepository vehicleRepo) {
+    public RentalServiceImpl(IRentalRepository rentalRepo, IVehicleRepository vehicleRepo) {
         this.rentalRepo = rentalRepo;
         this.vehicleRepo = vehicleRepo;
     }
 
-    public boolean rentVehicle(String userLogin, String vehicleId) {
-        Vehicle vehicle = vehicleRepo.getVehicle(vehicleId);
-        if (vehicle == null) {
+    public boolean rentVehicle(User user, Vehicle vehicle) {
+        Vehicle rentedVehicle = vehicleRepo.getVehicle(vehicle.getId());
+        if (rentedVehicle == null) {
             return false;
         }
 
-        if (getUserRental(userLogin) != null) {
+        if (getUserRental(user.getLogin()) != null) {
             return false;
         }
 
         for (Rental r : rentalRepo.getRentals()) {
-            if (r.vehicleId.equals(vehicleId)) {
+            if (r.vehicle.getId().equals(vehicle.getId())) {
                 return false;
             }
         }
 
         String newRentalId = UUID.randomUUID().toString();
-        Rental newRental = new Rental(newRentalId, userLogin, vehicleId);
+        Rental newRental = new Rental(newRentalId, user, rentedVehicle);
 
         rentalRepo.add(newRental);
         rentalRepo.save();
@@ -53,7 +55,7 @@ public class RentalService {
 
     public Rental getUserRental(String userLogin) {
         for (Rental r : rentalRepo.getRentals()) {
-            if (r.userLogin.equals(userLogin)) {
+            if (r.user.getLogin().equals(userLogin)) {
                 return r;
             }
         }

@@ -1,22 +1,32 @@
-package service;
+package service.impl;
 
 import entities.Rental;
 import entities.Vehicle;
 import repository.IVehicleRepository;
 import repository.impl.VehicleRepositoryImpl;
+import service.IVehicleService;
+import service.VehicleValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class VehicleService {
+public class VehicleServiceImpl implements IVehicleService {
     private final IVehicleRepository vehicleRepo;
-    private final RentalService rentalService;
+    private final RentalServiceImpl rentalServiceImpl;
     private final VehicleValidator vehicleValidator;
 
-    public VehicleService(IVehicleRepository vehicleRepo, RentalService rentalService, VehicleValidator vehicleValidator) {
+    public VehicleServiceImpl(IVehicleRepository vehicleRepo, RentalServiceImpl rentalServiceImpl, VehicleValidator vehicleValidator) {
         this.vehicleRepo = vehicleRepo;
-        this.rentalService = rentalService;
+        this.rentalServiceImpl = rentalServiceImpl;
         this.vehicleValidator = vehicleValidator;
+    }
+
+    public Vehicle getVehicle(String id) {
+        for (Vehicle v : vehicleRepo.getVehicles()) {
+            if (id.equals(v.getId()))
+                return v;
+        }
+        return null;
     }
 
     public List<Vehicle> getAllVehicles() {
@@ -25,13 +35,13 @@ public class VehicleService {
 
     public List<Vehicle> getAvailableVehicles() {
         List<Vehicle> allVehicles = vehicleRepo.getVehicles();
-        List<Rental> allRentals = rentalService.getAllRentals();
+        List<Rental> allRentals = rentalServiceImpl.getAllRentals();
         List<Vehicle> availableVehicles = new ArrayList<>();
 
         for (Vehicle vehicle : allVehicles) {
             boolean isRented = false;
             for (Rental rental : allRentals) {
-                if (rental.vehicleId.equals(vehicle.getId())) {
+                if (rental.vehicle.getId().equals(vehicle.getId())) {
                     isRented = true;
                     break;
                 }
@@ -57,8 +67,8 @@ public class VehicleService {
 
     public void removeVehicle(String vehicleId) {
         boolean isRented = false;
-        for (Rental rental : rentalService.getAllRentals()) {
-            if (rental.vehicleId.equals(vehicleId)) {
+        for (Rental rental : rentalServiceImpl.getAllRentals()) {
+            if (rental.vehicle.getId().equals(vehicleId)) {
                 isRented = true;
                 break;
             }
