@@ -2,14 +2,15 @@ package service;
 
 import entities.Vehicle;
 import entities.VehicleCategoryConfig;
+import service.impl.VehicleCategoryConfigServiceImpl;
 
 import java.util.Map;
 
 public class VehicleValidator {
 
-    private final VehicleCategoryConfigService configService;
+    private final VehicleCategoryConfigServiceImpl configService;
 
-    public VehicleValidator(VehicleCategoryConfigService configService) {
+    public VehicleValidator(VehicleCategoryConfigServiceImpl configService) {
         this.configService = configService;
     }
 

@@ -6,28 +6,28 @@ import entities.User;
 import entities.Vehicle;
 import entities.VehicleCategoryConfig;
 import repository.IUserRepository;
-import service.*;
+import service.impl.*;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class UI {
 
-    private final AuthService authService;
-    private final RentalService rentalService;
-    private final VehicleService vehicleService;
-    private final VehicleCategoryConfigService configService;
-    private final UserService userService;
+    private final AuthServiceImpl authServiceImpl;
+    private final RentalServiceImpl rentalServiceImpl;
+    private final VehicleServiceImpl vehicleServiceImpl;
+    private final VehicleCategoryConfigServiceImpl configService;
+    private final UserServiceImpl userServiceImpl;
     private final IUserRepository userRepo;
     private final Scanner scanner = new Scanner(System.in);
 
-    public UI(AuthService authService, RentalService rentalService, VehicleService vehicleService,
-              VehicleCategoryConfigService configService, UserService userService, IUserRepository userRepo) {
-        this.authService = authService;
-        this.rentalService = rentalService;
-        this.vehicleService = vehicleService;
+    public UI(AuthServiceImpl authServiceImpl, RentalServiceImpl rentalServiceImpl, VehicleServiceImpl vehicleServiceImpl,
+              VehicleCategoryConfigServiceImpl configService, UserServiceImpl userServiceImpl, IUserRepository userRepo) {
+        this.authServiceImpl = authServiceImpl;
+        this.rentalServiceImpl = rentalServiceImpl;
+        this.vehicleServiceImpl = vehicleServiceImpl;
         this.configService = configService;
-        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
         this.userRepo = userRepo;
     }
 
@@ -52,7 +52,7 @@ public class UI {
                     System.out.print("Enter password: ");
                     String password = scanner.nextLine();
 
-                    User loggedInUser = authService.login(login, password);
+                    User loggedInUser = authServiceImpl.login(login, password);
 
                     if (loggedInUser != null) {
                         System.out.println("*** LOGGED IN SUCCESSFULLY ***");
@@ -75,7 +75,7 @@ public class UI {
                     System.out.print("Enter new password: ");
                     String newPassword = scanner.nextLine();
 
-                    boolean isRegistered = authService.register(newLogin, newPassword);
+                    boolean isRegistered = authServiceImpl.register(newLogin, newPassword);
                     if (isRegistered) {
                         userRepo.save();
                         System.out.println("Account created successfully! You can now log in.");
@@ -111,7 +111,7 @@ public class UI {
 
             switch (choice) {
                 case "1":
-                    List<Vehicle> vehicles = vehicleService.getAllVehicles();
+                    List<Vehicle> vehicles = vehicleServiceImpl.getAllVehicles();
                     for (Vehicle v : vehicles) {
                         System.out.println(v.toString());
                     }
@@ -159,7 +159,7 @@ public class UI {
                             vehicle.addAttribute(attrName, value);
                         });
 
-                        Vehicle added = vehicleService.addVehicle(vehicle);
+                        Vehicle added = vehicleServiceImpl.addVehicle(vehicle);
                         System.out.println("Vehicle added successfully!:\n" + added);
 
                     } catch (Exception e) {
@@ -170,7 +170,7 @@ public class UI {
                     System.out.print("Enter ID of the vehicle to be removed: ");
                     String idToRemove = scanner.nextLine();
                     try {
-                        vehicleService.removeVehicle(idToRemove);
+                        vehicleServiceImpl.removeVehicle(idToRemove);
                         System.out.println("Removed the vehicle.");
                     } catch (Exception e) {
                         System.out.println("An error occurred when trying to remove a vehicle: " + e.getMessage());
@@ -179,8 +179,8 @@ public class UI {
                 case "4":
                     List<User> users = userRepo.getUsers();
                     for (User u : users) {
-                        Rental userRental = rentalService.getUserRental(u.login);
-                        String vehicleInfo = (userRental != null) ? userRental.vehicleId : "no such vehicle";
+                        Rental userRental = rentalServiceImpl.getUserRental(u.login);
+                        String vehicleInfo = (userRental != null) ? userRental.vehicle.getId() : "no such vehicle";
                         System.out.println("User: " + u.login + " | Rented vehicle ID: " + vehicleInfo);
                     }
                     break;
@@ -188,7 +188,7 @@ public class UI {
                     System.out.print("Enter user login to remove: ");
                     String loginToRemove = scanner.nextLine();
                     try {
-                        userService.removeUser(loginToRemove);
+                        userServiceImpl.removeUser(loginToRemove);
                         System.out.println("User removed successfully.");
                     } catch (Exception e) {
                         System.out.println("An error occurred when trying to remove a user: " + e.getMessage());
@@ -219,7 +219,7 @@ public class UI {
 
             switch (choice) {
                 case "1":
-                    List<Vehicle> available = vehicleService.getAvailableVehicles();
+                    List<Vehicle> available = vehicleServiceImpl.getAvailableVehicles();
                     if (available.isEmpty()) {
                         System.out.println("Currently there are no available vehicles.");
                     } else {
@@ -230,12 +230,12 @@ public class UI {
                     break;
                 case "2":
                     System.out.print("Enter ID of the vehicle you want to rent: ");
-                    List<Vehicle> vehicles = vehicleService.getAllVehicles();
+                    List<Vehicle> vehicles = vehicleServiceImpl.getAllVehicles();
                     for (Vehicle v : vehicles) {
                         System.out.println(v.toString());
                     }
                     String vehicleId = scanner.nextLine();
-                    boolean rented = rentalService.rentVehicle(user.login, vehicleId);
+                    boolean rented = rentalServiceImpl.rentVehicle(user, vehicleServiceImpl.getVehicle(vehicleId));
                     if (rented) {
                         System.out.println("Vehicle rented successfully!");
                     } else {
@@ -243,7 +243,7 @@ public class UI {
                     }
                     break;
                 case "3":
-                    boolean returned = rentalService.returnVehicle(user.login);
+                    boolean returned = rentalServiceImpl.returnVehicle(user.login);
                     if (returned) {
                         System.out.println("Vehicle returned successfully!");
                     } else {
@@ -254,9 +254,9 @@ public class UI {
                     System.out.println("--- YOUR DATA ---");
                     System.out.println("Login: " + user.login);
                     System.out.println("Role: " + user.role);
-                    Rental myRental = rentalService.getUserRental(user.login);
+                    Rental myRental = rentalServiceImpl.getUserRental(user.login);
                     if (myRental != null) {
-                        System.out.println("Rented vehicle ID: " + myRental.vehicleId);
+                        System.out.println("Rented vehicle ID: " + myRental.vehicle.getId());
                     } else {
                         System.out.println("Rented vehicle: None");
                     }

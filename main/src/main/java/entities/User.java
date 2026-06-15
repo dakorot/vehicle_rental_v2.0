@@ -1,8 +1,23 @@
 package entities;
 
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
+    @Id
     public String login;
+
     public String password;
+
+    @Enumerated(EnumType.STRING)
     public Role role;
 
     private User(Builder builder) {

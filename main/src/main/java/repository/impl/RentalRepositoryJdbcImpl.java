@@ -2,6 +2,8 @@ package repository.impl;
 
 import entities.Rental;
 import repository.IRentalRepository;
+import repository.IUserRepository;
+import repository.IVehicleRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +11,13 @@ import java.sql.*;
 
 public class RentalRepositoryJdbcImpl implements IRentalRepository {
     private final String dbUrl;
+    private final IUserRepository userRepo;
+    private final IVehicleRepository vehicleRepo;
 
-    public RentalRepositoryJdbcImpl(String dbUrl) {
+    public RentalRepositoryJdbcImpl(String dbUrl, IUserRepository userRepo, IVehicleRepository vehicleRepo) {
         this.dbUrl = dbUrl;
+        this.userRepo = userRepo;
+        this.vehicleRepo = vehicleRepo;
     }
 
     private Connection getConnection() throws SQLException {
@@ -29,8 +35,8 @@ public class RentalRepositoryJdbcImpl implements IRentalRepository {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, rental.id);
-            pstmt.setString(2, rental.vehicleId);
-            pstmt.setString(3, rental.userLogin);
+            pstmt.setString(2, rental.vehicle.getId());
+            pstmt.setString(3, rental.user.getLogin());
             pstmt.setString(4, java.time.LocalDate.now().toString());
 
             pstmt.executeUpdate();
@@ -67,7 +73,7 @@ public class RentalRepositoryJdbcImpl implements IRentalRepository {
                 String userLogin = rs.getString("user_id");
                 String vehicleId = rs.getString("vehicle_id");
 
-                rentals.add(new Rental(id, userLogin, vehicleId));
+                rentals.add(new Rental(id, userRepo.getUser(userLogin), vehicleRepo.getVehicle(vehicleId)));
             }
         } catch (SQLException e) {
             System.out.println("Database error (Rental getRentals): " + e.getMessage());

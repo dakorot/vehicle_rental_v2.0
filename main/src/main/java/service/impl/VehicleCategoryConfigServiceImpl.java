@@ -1,16 +1,17 @@
-package service;
+package service.impl;
 
 
 import entities.VehicleCategoryConfig;
 import repository.VehicleCategoryConfigRepository;
+import service.IVehicleCategoryConfigService;
 
 import java.util.List;
 
-public class VehicleCategoryConfigService {
+public class VehicleCategoryConfigServiceImpl implements IVehicleCategoryConfigService {
 
     private final VehicleCategoryConfigRepository configRepository;
 
-    public VehicleCategoryConfigService(VehicleCategoryConfigRepository configRepository) {
+    public VehicleCategoryConfigServiceImpl(VehicleCategoryConfigRepository configRepository) {
         this.configRepository = configRepository;
     }
 
