@@ -26,7 +26,7 @@ public class VehicleCategoryConfigServiceImpl implements IVehicleCategoryConfigS
 
     public VehicleCategoryConfig getByCategory(String category) {
         return configRepository.findByCategory(category)
-                .orElseThrow(() -> new IllegalArgumentException("Nieznana kategoria pojazdu: " + category));
+                .orElseThrow(() -> new IllegalArgumentException("Unknown vehicle category: " + category));
     }
 
     public boolean categoryExists(String category) {
