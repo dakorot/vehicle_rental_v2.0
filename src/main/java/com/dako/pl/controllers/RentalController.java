@@ -1,6 +1,7 @@
 package com.dako.pl.controllers;
 
 import com.dako.pl.entities.Rental;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.dako.pl.repository.IUserRepository;
 import com.dako.pl.repository.IVehicleRepository;
@@ -21,26 +22,29 @@ public class RentalController {
         this.vehicleRepo = vehicleRepo;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Rental> list() {
         return rentalService.getAllRentals();
     }
 
-    @GetMapping("/users/{userId}")
-    public List<Rental> userRentals(@PathVariable String userId) {
-        return List.of(rentalService.getUserRental(userId));
+    @GetMapping("/my")
+    public Rental userRentals() {
+        String currentLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+        return rentalService.getUserRental(currentLogin);
     }
 
-    @PostMapping("/users/{userId}/rent/{vehicleId}")
-    public Rental rent(@PathVariable String userId, @PathVariable String vehicleId) {
-        rentalService.rentVehicle(userRepo.getUser(userId), vehicleRepo.getVehicle(vehicleId));
-        return rentalService.getUserRental(userId);
+    @PostMapping("/rent/{vehicleId}")
+    public Rental rent(@PathVariable String vehicleId) {
+        String currentLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+        rentalService.rentVehicle(userRepo.getUser(currentLogin), vehicleRepo.getVehicle(vehicleId));
+        return rentalService.getUserRental(currentLogin);
     }
 
-    @PostMapping("/users/{userId}/return")
-    public Rental returnVehicle(@PathVariable String userId) {
-        Rental returning = rentalService.getUserRental(userId);
-        rentalService.returnVehicle(userId);
+    @PostMapping("/return")
+    public Rental returnVehicle() {
+        String currentLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+        Rental returning = rentalService.getUserRental(currentLogin);
+        rentalService.returnVehicle(currentLogin);
         return returning;
     }
 }

@@ -3,3 +3,5 @@ spring:
     active: ${APP_PROFILE:json}
 server:
   port: 8080
+security:
+  key: ${JWT_SECRET:placeholder}
